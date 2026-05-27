@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Restaurantes</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="app-page">
+<div class="app-shell">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow" th:text="${user != null ? 'Hola, ' + user.alias : 'Explora'}">Explora</p>
+            <h1>Restaurantes</h1>
+        </div>
+        <a th:href="@{/profile}" class="pill-link">Mi perfil</a>
+    </header>
+
+    <section class="search-card">
+        <div class="search-row">
+            <input id="queryInput" type="search" placeholder="Buscar restaurantes..." th:value="${criteria != null ? criteria.query : ''}">
+        </div>
+
+        <div class="filter-grid">
+            <select id="priceFilter">
+                <option value="">Rango de precio</option>
+                <option value="10000" th:selected="${criteria != null and criteria.maxPrice != null and criteria.maxPrice == 10000}">Hasta $10.000</option>
+                <option value="14000" th:selected="${criteria != null and criteria.maxPrice != null and criteria.maxPrice == 14000}">Hasta $14.000</option>
+                <option value="18000" th:selected="${criteria != null and criteria.maxPrice != null and criteria.maxPrice == 18000}">Hasta $18.000</option>
+            </select>
+
+            <select id="cuisineFilter">
+                <option value="">Tipo de comida</option>
+                <option value="Italiana">Italiana</option>
+                <option value="Mediterránea">Mediterránea</option>
+                <option value="Colombiana">Colombiana</option>
+                <option value="Saludable">Saludable</option>
+                <option value="Asiática">Asiática</option>
+            </select>
+
+            <select id="distanceFilter">
+                <option value="">Cercanía</option>
+                <option value="1.0">Hasta 1 km</option>
+                <option value="2.5">Hasta 2.5 km</option>
+                <option value="5.0">Hasta 5 km</option>
+            </select>
+
+            <label class="check-inline">
+                <input id="availableOnly" type="checkbox">
+                Disponibles
+            </label>
+        </div>
+
+        <div class="chip-row">
+            <span class="chip">#city</span>
+            <span class="chip">#top</span>
+            <span class="chip">#trending</span>
+            <span class="chip">#popular</span>
+        </div>
+
+        <div class="subtle-link-row">
+            <span id="resultCount">Mostrando <span th:text="${restaurants.size()}">0</span> restaurantes cerca</span>
+            <a th:href="@{/map}">Ver mapa →</a>
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2>Restaurantes más visitados</h2>
+        <div id="restaurantsGrid" class="restaurant-list">
+            <article class="restaurant-card" th:each="restaurant : ${restaurants}">
+                <img th:src="${restaurant.heroImageUrl}" alt="restaurant">
+                <div class="restaurant-card-body">
+                    <div>
+                        <h3 th:text="${restaurant.name}">Nombre</h3>
+                        <p th:text="${restaurant.location}">Ubicación</p>
+                        <small th:text="${restaurant.cuisine}">Tipo</small>
+                    </div>
+                    <div class="restaurant-score">
+                        <span>⭐</span>
+                        <strong th:text="${restaurant.rating}">4.8</strong>
+                    </div>
+                </div>
+                <div class="restaurant-footer">
+                    <span th:text="${'Ranking: #' + restaurant.rankingPosition}">Ranking</span>
+                    <a th:href="@{/restaurants/{id}(id=${restaurant.id})}">Ver →</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <nav class="bottom-nav">
+        <a class="active" th:href="@{/home}">🏠</a>
+        <a th:href="@{/map}">📍</a>
+        <a th:href="@{/profile}">👤</a>
+    </nav>
+</div>
+
+<script th:src="@{/js/home-filters.js}"></script>
+</body>
+</html>

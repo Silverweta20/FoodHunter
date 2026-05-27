@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mapa</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <script th:if="${googleMapsApiKey != null}"
+            th:src="${'https://maps.googleapis.com/maps/api/js?key=' + googleMapsApiKey + '&libraries=places,geometry'}"></script>
+</head>
+<body class="app-page">
+<div class="app-shell">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Ubicación</p>
+            <h1>Mapa en Vivo</h1>
+        </div>
+        <a th:href="@{/home}" class="pill-link">← Atrás</a>
+    </header>
+
+    <section class="search-card">
+        <div class="search-row">
+            <input id="mapSearch" type="search" placeholder="Buscar restaurantes...">
+        </div>
+        <div class="subtle-link-row">
+            <span id="restaurantCount">📍 Mostrando <strong th:text="${restaurants.size()}">0</strong> restaurantes cerca</span>
+        </div>
+    </section>
+
+    <section class="map-card">
+        <div class="map-badge">
+            <span id="badge-icon">📍</span>
+            <strong id="badge-count" th:text="${restaurants.size()} + ' Restaurantes'">0 Restaurantes</strong>
+        </div>
+        <div id="googleMap"></div>
+
+        <div class="geolocation-info">
+            <span>📍</span>
+            <span id="geoInfo">Obteniendo ubicación...</span>
+        </div>
+
+        <div class="map-controls">
+            <button id="showAllBtn" class="active">Todos los Restaurantes</button>
+            <button id="showVisitedBtn">Visitados</button>
+            <button id="centerMapBtn">Centrar en Mí</button>
+        </div>
+    </section>
+
+    <section id="visitedSection" class="visited-restaurants-section" style="display:none;padding:16px 14px">
+        <h2>🌟 Restaurantes Visitados</h2>
+        <div id="visitedRestaurantsList" class="visited-restaurants-grid">
+            <!-- Se llenará dinámicamente con JavaScript -->
+        </div>
+    </section>
+
+    <section class="content-section">
+        <h2>Restaurantes en el área</h2>
+        <div id="restaurantsList" class="restaurant-list">
+            <article class="restaurant-card mini" th:each="restaurant : ${restaurants}">
+                <img th:src="${restaurant.heroImageUrl}" alt="restaurant">
+                <div class="restaurant-card-body">
+                    <div>
+                        <h3 th:text="${restaurant.name}">Nombre</h3>
+                        <p th:text="${restaurant.location}">Ubicación</p>
+                    </div>
+                    <div class="restaurant-score">
+                        <span>⭐</span>
+                        <strong th:text="${restaurant.rating}">4.8</strong>
+                    </div>
+                </div>
+                <div class="restaurant-footer">
+                    <a th:href="@{/restaurants/{id}(id=${restaurant.id})}">Abrir →</a>
+                </div>
+            </article>
+        </div>
+    </section>
+
+    <nav class="bottom-nav">
+        <a th:href="@{/home}">🏠</a>
+        <a class="active" th:href="@{/map}">📍</a>
+        <a th:href="@{/profile}">👤</a>
+    </nav>
+</div>
+
+<script th:inline="javascript">
+    /*<![CDATA[*/
+    window.__restaurantsData = /*[[${restaurantsJson}]]*/ [];
+    /*]]>*/
+</script>
+
+<script th:src="@{/js/map.js}"></script>
+</body>
+</html>

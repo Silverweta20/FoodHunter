@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mi perfil</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body class="app-page">
+<div class="app-shell">
+    <header class="topbar">
+        <div>
+            <p class="eyebrow">Mi Perfil</p>
+            <h1 th:text="${user.alias}">Usuario</h1>
+        </div>
+        <a th:href="@{/logout}" class="pill-danger">Salir</a>
+    </header>
+
+    <section class="search-card profile-filters">
+        <div class="search-row">
+            <input type="search" placeholder="Buscar en historial...">
+        </div>
+
+        <h2>Filtros</h2>
+        <div class="profile-grid">
+            <label>
+                <input type="checkbox" checked>
+                Historial
+            </label>
+            <label>
+                <input type="checkbox">
+                En realizadas
+            </label>
+            <label>
+                <input type="checkbox">
+                Vencidas
+            </label>
+        </div>
+
+        <div class="price-filter">
+            <p>⭐ Rango de precio</p>
+            <label>
+                <input type="radio" name="price" checked>
+                Todos
+            </label>
+            <label>
+                <input type="radio" name="price">
+                $0 - $10,000
+            </label>
+            <label>
+                <input type="radio" name="price">
+                $10,000 - $20,000
+            </label>
+            <label>
+                <input type="radio" name="price">
+                $20,000 - $50,000
+            </label>
+        </div>
+    </section>
+
+    <section th:if="${msg}" class="alert alert-success" th:text="${msg}"></section>
+
+    <section class="content-section">
+        <h2>📜 Historial</h2>
+
+        <article class="history-card" th:each="reservation : ${reservations}">
+            <div class="history-left">
+                <h3 th:text="${reservation.restaurantName}">Restaurante</h3>
+                <p>Reserva</p>
+                <small th:text="${#temporals.format(reservation.createdAt, 'yyyy-MM-dd')}">Fecha</small>
+            </div>
+            <div class="history-right">
+                <span class="status-pill success" th:text="${reservation.status}">Completado</span>
+                <strong th:text="${'$' + #numbers.formatInteger(reservation.dishPrice, 0, 'POINT')}">$45.000</strong>
+            </div>
+        </article>
+    </section>
+
+    <section th:if="${managedRestaurant != null}" class="content-section">
+        <h2>🏪 Panel del restaurante</h2>
+        <p th:text="${managedRestaurant.name}">Restaurante</p>
+
+        <article class="history-card" th:each="reservation : ${managedReservations}">
+            <div class="history-left">
+                <h3 th:text="${reservation.dishName}">Plato</h3>
+                <p th:text="${reservation.userAlias + ' • ' + reservation.userEmail}">Cliente</p>
+                <small th:text="${#temporals.format(reservation.pickupAt, 'yyyy-MM-dd HH:mm')}">Hora</small>
+            </div>
+            <div class="history-right">
+                <span class="status-pill" th:text="${reservation.status}">PENDING</span>
+                <div class="inline-actions">
+                    <form th:action="@{/reservations/{id}/confirm(id=${reservation.id})}" method="post">
+                        <button type="submit" class="btn-mini btn-primary">✓ Confirmar</button>
+                    </form>
+                    <form th:action="@{/reservations/{id}/reject(id=${reservation.id})}" method="post">
+                        <button type="submit" class="btn-mini btn-danger">✕ Rechazar</button>
+                    </form>
+                </div>
+            </div>
+        </article>
+    </section>
+
+    <section class="content-section">
+        <h2>🔔 Notificaciones</h2>
+        <div class="notification-box">
+            <ul>
+                <li th:each="note : ${notifications}" th:text="${note}">Mensaje</li>
+            </ul>
+        </div>
+    </section>
+
+    <nav class="bottom-nav">
+        <a th:href="@{/home}">🏠</a>
+        <a th:href="@{/map}">📍</a>
+        <a class="active" th:href="@{/profile}">👤</a>
+    </nav>
+</div>
+</body>
+</html>
