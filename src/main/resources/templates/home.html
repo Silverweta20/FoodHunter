@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Restaurantes</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <link rel="stylesheet" th:href="@{/css/home.css}" href="../static/css/home.css">
 </head>
 <body class="app-page">
 <div class="app-shell">
@@ -67,7 +67,7 @@
     <section class="content-section">
         <h2>Restaurantes más visitados</h2>
         <div id="restaurantsGrid" class="restaurant-list">
-            <article class="restaurant-card" th:each="restaurant : ${restaurants}">
+            <a th:href="@{/restaurants/{id}(id=${restaurant.id})}" class="restaurant-card" th:each="restaurant : ${restaurants}">
                 <img th:src="${restaurant.heroImageUrl}" alt="restaurant">
                 <div class="restaurant-card-body">
                     <div>
@@ -82,9 +82,9 @@
                 </div>
                 <div class="restaurant-footer">
                     <span th:text="${'Ranking: #' + restaurant.rankingPosition}">Ranking</span>
-                    <a th:href="@{/restaurants/{id}(id=${restaurant.id})}">Ver →</a>
+                    <span class="view-btn">Ver →</span>
                 </div>
-            </article>
+            </a>
         </div>
     </section>
 
@@ -95,6 +95,6 @@
     </nav>
 </div>
 
-<script th:src="@{/js/home-filters.js}"></script>
+<script th:src="@{/js/home-filters.js}" src="../static/js/home-filters.js"></script>
 </body>
 </html>

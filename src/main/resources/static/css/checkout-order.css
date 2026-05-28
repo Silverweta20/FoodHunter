@@ -1,0 +1,256 @@
+:root {
+    --bg: #efeff2;
+    --card: #ffffff;
+    --text: #111827;
+    --muted: #6b7280;
+    --primary: #4257f4;
+    --primary-dark: #3547cf;
+    --border: #e5e7eb;
+    --soft: #f3f4f6;
+}
+
+*,
+*::before,
+*::after {
+    box-sizing: border-box;
+}
+
+html,
+body {
+    margin: 0;
+    padding: 0;
+    font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+}
+
+.checkout-shell {
+    max-width: 520px;
+    margin: 0 auto;
+    min-height: 100vh;
+    background: var(--bg);
+}
+
+.checkout-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 16px;
+    border-bottom: 1px solid #d9d9de;
+}
+
+.checkout-header h1 {
+    margin: 0;
+    font-size: 34px;
+    font-weight: 700;
+}
+
+.back-btn {
+    width: 40px;
+    height: 40px;
+    border-radius: 999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 34px;
+    text-decoration: none;
+    color: #111;
+    background: transparent;
+}
+
+.checkout-content {
+    padding: 14px;
+    padding-bottom: 120px;
+}
+
+.card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 14px;
+    margin-bottom: 14px;
+}
+
+.card h2 {
+    margin: 0 0 12px;
+    font-size: 20px;
+    font-weight: 700;
+}
+
+textarea {
+    width: 100%;
+    min-height: 92px;
+    border: 1px solid #c9ced8;
+    border-radius: 12px;
+    padding: 12px;
+    resize: vertical;
+    font-family: inherit;
+    font-size: 16px;
+}
+
+.counter-row,
+.line-item {
+    background: var(--soft);
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 10px;
+}
+
+.counter-row small,
+.line-item small {
+    color: var(--muted);
+    display: block;
+    margin-top: 2px;
+    font-size: 16px;
+}
+
+.counter-row p {
+    margin: 4px 0 0;
+    font-weight: 700;
+    font-size: 32px;
+}
+
+.line-item span {
+    font-size: 20px;
+}
+
+.line-item strong {
+    font-size: 34px;
+}
+
+.with-counter {
+    margin-bottom: 10px;
+}
+
+.with-counter:last-child {
+    margin-bottom: 0;
+}
+
+.counter-control {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.counter-control span {
+    min-width: 18px;
+    text-align: center;
+    font-size: 26px;
+}
+
+.counter-control.small span {
+    font-size: 24px;
+}
+
+.counter-btn {
+    width: 34px;
+    height: 34px;
+    border-radius: 999px;
+    border: none;
+    cursor: pointer;
+    font-size: 26px;
+    line-height: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.counter-btn.minus {
+    background: #d1d5db;
+    color: #4b5563;
+}
+
+.counter-btn.plus {
+    background: var(--primary);
+    color: #fff;
+}
+
+.checkout-footer {
+    position: fixed;
+    left: 50%;
+    bottom: 0;
+    transform: translateX(-50%);
+    width: 100%;
+    max-width: 520px;
+    background: var(--bg);
+    border-top: 1px solid #d6d6db;
+    padding: 12px 14px 16px;
+}
+
+.total-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 10px;
+}
+
+.total-row strong {
+    font-size: 36px;
+}
+
+.total-row span {
+    color: var(--primary);
+    font-size: 44px;
+    font-weight: 800;
+}
+
+.action-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+}
+
+.btn {
+    border: none;
+    border-radius: 12px;
+    padding: 14px;
+    font-size: 32px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.btn-secondary {
+    background: #d1d5db;
+    color: #111827;
+}
+
+.btn-primary {
+    background: var(--primary);
+    color: #fff;
+}
+
+.btn-primary:hover {
+    background: var(--primary-dark);
+}
+
+@media (max-width: 520px) {
+    .checkout-header h1 {
+        font-size: 32px;
+    }
+
+    .counter-row p,
+    .line-item span {
+        font-size: 22px;
+    }
+
+    .line-item strong {
+        font-size: 32px;
+    }
+
+    .total-row strong {
+        font-size: 34px;
+    }
+
+    .total-row span {
+        font-size: 42px;
+    }
+
+    .btn {
+        font-size: 30px;
+    }
+}

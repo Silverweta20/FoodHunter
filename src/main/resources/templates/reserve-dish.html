@@ -3,141 +3,585 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title th:text="${restaurant.name}">Restaurante</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
+    <title th:text="${restaurant.name}">Detalle del plato</title>
+    <link rel="stylesheet" th:href="@{/css/global.css}">
+    <link rel="stylesheet" th:href="@{/css/reserve-dish.css}">
+    <style>
+        .reserve-page {
+            background: #f9fafb;
+        }
+
+        .reserve-shell {
+            max-width: 460px;
+            margin: 0 auto;
+            background: white;
+            min-height: 100vh;
+            box-shadow: 0 0 40px rgba(0,0,0,.08);
+            position: relative;
+            padding-bottom: 100px;
+        }
+
+        .reserve-header {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            padding: 16px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            background: white;
+            position: sticky;
+            top: 0;
+            z-index: 10;
+        }
+
+        .reserve-header .back-btn {
+            background: none;
+            border: none;
+            font-size: 24px;
+            cursor: pointer;
+            color: #1f2937;
+        }
+
+        .reserve-header h1 {
+            margin: 0;
+            font-size: 20px;
+        }
+
+        .reserve-content {
+            padding: 16px 14px;
+        }
+
+        .card {
+            background: white;
+            border: 1px solid #e5e7eb;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+        }
+
+        .dish-card {
+            position: relative;
+            overflow: hidden;
+        }
+
+        .dish-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 12px;
+        }
+
+        .dish-info {
+            margin-bottom: 12px;
+        }
+
+        .restaurant-name {
+            font-size: 12px;
+            color: #667085;
+            margin: 0 0 4px;
+        }
+
+        .meal-type {
+            font-size: 12px;
+            color: #1d5cff;
+            font-weight: 600;
+            margin: 0 0 8px;
+        }
+
+        .dish-info h2 {
+            margin: 0 0 8px;
+            font-size: 20px;
+        }
+
+        .dish-price {
+            font-size: 18px;
+            font-weight: 700;
+            color: #1d5cff;
+            margin: 0;
+        }
+
+        .menu-board-btn {
+            width: 100%;
+            padding: 12px;
+            background: #f0f4ff;
+            border: 2px solid #1d5cff;
+            border-radius: 12px;
+            color: #1d5cff;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .menu-board-btn:hover {
+            background: #1d5cff;
+            color: white;
+        }
+
+        .ingredients-card h3 {
+            margin: 0 0 12px;
+            font-size: 16px;
+        }
+
+        .ingredient-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 12px 0;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .ingredient-row:last-child {
+            border-bottom: none;
+        }
+
+        .ingredient-row span {
+            font-weight: 500;
+        }
+
+        .ingredient-actions {
+            display: flex;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .ingredient-price {
+            font-size: 12px;
+            color: #667085;
+            white-space: nowrap;
+        }
+
+        .ingredient-toggle {
+            background: #f3f5fa;
+            border: 2px solid #e5e7eb;
+            width: 32px;
+            height: 32px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 700;
+            color: #1d5cff;
+            transition: all 0.2s;
+        }
+
+        .ingredient-toggle:hover {
+            background: #1d5cff;
+            color: white;
+            border-color: #1d5cff;
+        }
+
+        .ingredient-row.selected .ingredient-toggle {
+            background: #1d5cff;
+            color: white;
+            border-color: #1d5cff;
+        }
+
+        .summary-card {
+            background: #f9fafb;
+        }
+
+        .summary-line {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            font-size: 14px;
+        }
+
+        .total-line {
+            border-top: 2px solid #e5e7eb;
+            padding-top: 12px;
+            margin-top: 12px;
+            font-size: 16px;
+        }
+
+        .reserve-footer {
+            position: fixed;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 460px;
+            max-width: 100%;
+            padding: 12px 14px;
+            background: white;
+            border-top: 1px solid #e5e7eb;
+            display: flex;
+            gap: 10px;
+        }
+
+        .checkout-btn {
+            width: 100%;
+            padding: 14px;
+            background: #1d5cff;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            font-size: 16px;
+        }
+
+        .checkout-btn:hover:not(:disabled) {
+            background: #1e40af;
+            transform: translateY(-2px);
+        }
+
+        .checkout-btn:disabled {
+            background: #d0d5dd;
+            cursor: not-allowed;
+        }
+
+        .empty-state {
+            padding: 20px;
+            text-align: center;
+            color: #667085;
+            background: #f9fafb;
+            border-radius: 12px;
+            border: 1px dashed #d0d5dd;
+        }
+
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-overlay.active {
+            display: flex;
+            align-items: flex-end;
+        }
+
+        .modal-dialog {
+            background: white;
+            width: 100%;
+            max-width: 460px;
+            border-radius: 20px 20px 0 0;
+            max-height: 80vh;
+            overflow-y: auto;
+            animation: slideUp 0.3s ease-out;
+        }
+
+        @keyframes slideUp {
+            from {
+                transform: translateY(100%);
+            }
+            to {
+                transform: translateY(0);
+            }
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 16px 14px;
+            border-bottom: 1px solid #e5e7eb;
+            position: sticky;
+            top: 0;
+            background: white;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+            font-size: 18px;
+        }
+
+        .modal-close {
+            background: none;
+            border: none;
+            font-size: 28px;
+            cursor: pointer;
+            color: #667085;
+        }
+
+        .modal-body {
+            padding: 16px 14px;
+        }
+
+        .menu-group {
+            margin-bottom: 20px;
+        }
+
+        .menu-group h3 {
+            font-size: 14px;
+            font-weight: 700;
+            color: #1d5cff;
+            margin: 0 0 12px;
+        }
+
+        .menu-item-btn {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 12px;
+            background: #f9fafb;
+            border: 1px solid #e5e7eb;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+            margin-bottom: 10px;
+            text-align: left;
+        }
+
+        .menu-item-btn:hover {
+            background: #f0f4ff;
+            border-color: #1d5cff;
+        }
+
+        .menu-item-btn img {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 8px;
+            flex-shrink: 0;
+        }
+
+        .menu-item-btn div {
+            flex: 1;
+        }
+
+        .menu-item-btn strong {
+            display: block;
+            font-size: 14px;
+            margin-bottom: 4px;
+        }
+
+        .menu-item-btn small {
+            color: #1d5cff;
+            font-weight: 600;
+        }
+    </style>
 </head>
-<body class="app-page">
-<div class="app-shell detail-shell">
-    <header class="detail-hero">
-        <a th:href="@{/home}" class="back-btn">←</a>
-        <img th:src="${restaurant.heroImageUrl}" alt="hero" class="hero-image">
+<body class="reserve-page">
+<div class="reserve-shell">
+    <header class="reserve-header">
+        <a th:href="@{/restaurants/{id}(id=${restaurant.id})}" class="back-btn" aria-label="Volver">‹</a>
+        <h1>Detalle del plato</h1>
     </header>
 
-    <main class="detail-content">
-        <h1 th:text="${restaurant.name}">Nombre</h1>
-        <div class="meta-row">
-            <span>📍 <span th:text="${restaurant.location}">Local</span></span>
-            <span>⭐ <span th:text="${restaurant.rating}">4.8</span></span>
-            <span th:text="${'Ranking: #' + restaurant.rankingPosition}">Ranking</span>
-        </div>
-
-        <p class="lead" th:text="${restaurant.description}">Descripción</p>
-
-        <div class="action-row">
-            <a th:href="@{/restaurants/{id}/reserve(id=${restaurant.id})}" class="btn btn-primary">Reservar Platos</a>
-            <a href="#reservas" class="btn btn-success">Reservas</a>
-        </div>
-
-        <section class="menu-block">
-            <div class="section-head">
-                <h2>Menú</h2>
-                <a href="#reviews">Ver opiniones →</a>
-            </div>
-
-            <div class="menu-board">
-                <img th:src="${restaurant.menuBoardImageUrl}" alt="menu board">
-                <div class="menu-board-meta">
-                    <strong>Menú del día</strong>
-                    <span th:text="${'Publicado: ' + #temporals.format(restaurant.menuBoardPublishedAt, 'dd/MM/yyyy HH:mm')}">
-                        Publicado
-                    </span>
+    <main class="reserve-content">
+        <div id="menuModal" class="modal-overlay">
+            <div class="modal-dialog">
+                <div class="modal-header">
+                    <h2>Menú del día</h2>
+                    <button class="modal-close" type="button" onclick="closeMenuModal()">×</button>
+                </div>
+                <div class="modal-body">
+                    <div id="menuGroups"></div>
                 </div>
             </div>
+        </div>
 
-            <div class="menu-list">
-                <article class="menu-card" th:each="item : ${restaurant.menuItems}">
-                    <img th:src="${item.imageUrl}" alt="plato">
-                    <div class="menu-card-body">
-                        <h3 th:text="${item.name}">Plato</h3>
-                        <p th:text="${item.description}">Descripción</p>
-                        <small th:text="${item.mealType + ' • ' + item.timeRange}">Horario</small>
-                        <strong th:text="${'$' + #numbers.formatInteger(item.price, 0, 'POINT')}">$10.000</strong>
-                        <span th:text="${'Publicado ' + #temporals.format(item.publishedAt, 'HH:mm')}">Hora</span>
+        <form id="reserveForm" th:action="@{/reservations}" method="post">
+            <input type="hidden" name="restaurantId" th:value="${restaurant.id}">
+            <input type="hidden" id="menuItemId" name="menuItemId" th:value="${!#lists.isEmpty(menuItems) ? menuItems[0].id : 0}">
+            <input type="hidden" name="pickupAt" id="pickupAtInput" th:value="${pickupAt}">
+            <input type="hidden" id="selectedIngredients" name="selectedIngredients" value="">
+
+            <div th:if="${#lists.isEmpty(menuItems)}" class="empty-state">
+                <p>Este restaurante no tiene platos disponibles por ahora.</p>
+            </div>
+
+            <section th:if="${!#lists.isEmpty(menuItems)}" th:with="selected=${menuItems[0]}" class="card dish-card">
+                <img id="mainDishImage"
+                     class="dish-image"
+                     th:src="${selected.imageUrl}"
+                     alt="Plato"
+                     onerror="this.src='https://via.placeholder.com/800x420?text=Plato'">
+
+                <div class="dish-info">
+                    <p class="restaurant-name" th:text="${restaurant.name}">Restaurante</p>
+                    <p class="meal-type" th:text="${'(' + selected.mealType + ')'}">(Primero)</p>
+                    <h2 id="mainDishName" th:text="${selected.name}">Plato principal</h2>
+
+                    <p id="mainDishPrice"
+                       class="dish-price"
+                       th:attr="data-price=${selected.price}"
+                       th:text="${'$' + #numbers.formatInteger(selected.price, 0, 'POINT')}">$10.000</p>
+                </div>
+
+                <button type="button" class="menu-board-btn" onclick="openMenuModal()" th:if="${!#lists.isEmpty(menuItems)}">
+                    📋 Ver Menú del día
+                </button>
+            </section>
+
+            <section class="card ingredients-card">
+                <h3>Ingredientes opcionales:</h3>
+
+                <div class="ingredient-row" data-name="Tomate" data-price="500">
+                    <span>Tomate</span>
+                    <div class="ingredient-actions">
+                        <span class="ingredient-price">+$500</span>
+                        <button type="button" class="ingredient-toggle" aria-label="Agregar tomate">+</button>
                     </div>
-                </article>
-            </div>
-        </section>
-
-        <section id="reservas" class="reservations-block" th:if="${canManage}">
-            <h2>Reservas recibidas</h2>
-            <article class="reservation-card" th:each="reservation : ${reservations}">
-                <div>
-                    <h3 th:text="${reservation.dishName}">Plato</h3>
-                    <p th:text="${reservation.userAlias + ' • ' + reservation.userEmail}">Usuario</p>
-                    <small th:text="${#temporals.format(reservation.pickupAt, 'dd/MM/yyyy HH:mm')}">Hora</small>
                 </div>
-                <div class="reservation-actions">
-                    <span class="status-pill" th:text="${reservation.status}">PENDING</span>
-                    <form th:action="@{/reservations/{id}/confirm(id=${reservation.id})}" method="post">
-                        <button class="btn-mini btn-primary" type="submit">Confirmar</button>
-                    </form>
-                    <form th:action="@{/reservations/{id}/reject(id=${reservation.id})}" method="post">
-                        <input type="hidden" name="reason" value="Capacidad completa">
-                        <button class="btn-mini btn-danger" type="submit">Rechazar</button>
-                    </form>
+
+                <div class="ingredient-row" data-name="Albahaca" data-price="300">
+                    <span>Albahaca</span>
+                    <div class="ingredient-actions">
+                        <span class="ingredient-price">+$300</span>
+                        <button type="button" class="ingredient-toggle" aria-label="Agregar albahaca">+</button>
+                    </div>
                 </div>
-            </article>
-        </section>
 
-        <section id="reviews" class="reviews-block">
-            <div class="section-head">
-                <h2>Opiniones</h2>
-            </div>
-
-            <form th:if="${canReview}" th:action="@{/restaurants/{id}/reviews(id=${restaurant.id})}" method="post" class="review-form">
-                <label for="stars">Calificación</label>
-                <select id="stars" name="stars" required>
-                    <option value="5">5 estrellas ⭐⭐⭐⭐⭐</option>
-                    <option value="4">4 estrellas ⭐⭐⭐⭐</option>
-                    <option value="3">3 estrellas ⭐⭐⭐</option>
-                    <option value="2">2 estrellas ⭐⭐</option>
-                    <option value="1">1 estrella ⭐</option>
-                </select>
-
-                <label for="comment">Reseña</label>
-                <textarea
-                        id="comment"
-                        name="comment"
-                        rows="4"
-                        placeholder="Escribe tu opinión sobre este restaurante..."
-                        required
-                        minlength="10"
-                        maxlength="500"></textarea>
-
-                <label for="photos">Fotos de platos (URLs separadas por coma)</label>
-                <input
-                        id="photos"
-                        type="text"
-                        name="photos"
-                        placeholder="https://... , https://...">
-
-                <button class="btn btn-primary" type="submit">Publicar reseña</button>
-            </form>
-
-            <div th:if="${!canReview}" class="alert alert-info">
-                ℹ️ Solo usuarios registrados con correo institucional pueden publicar reseñas.
-            </div>
-
-            <article class="review-card" th:each="review : ${restaurant.reviews}">
-                <div class="review-top">
-                    <strong th:text="${review.userAlias}">Alias</strong>
-                    <span th:text="${review.stars + ' ★'}">5 ★</span>
+                <div class="ingredient-row" data-name="Mozzarella" data-price="1000">
+                    <span>Mozzarella</span>
+                    <div class="ingredient-actions">
+                        <span class="ingredient-price">+$1.000</span>
+                        <button type="button" class="ingredient-toggle" aria-label="Agregar mozzarella">+</button>
+                    </div>
                 </div>
-                <p th:text="${review.comment}">Comentario</p>
-                <small th:text="${#temporals.format(review.createdAt, 'dd/MM/yyyy HH:mm')}">Fecha</small>
-                <div class="photo-strip" th:if="${!#lists.isEmpty(review.photoUrls)}">
-                    <img th:each="photo : ${review.photoUrls}" th:src="${photo}" alt="foto">
-                </div>
-            </article>
-        </section>
+            </section>
 
-        <div th:if="${restaurantNotifications != null and !#lists.isEmpty(restaurantNotifications)}" class="notification-box">
-            <h3>Notificaciones del restaurante</h3>
-            <ul>
-                <li th:each="note : ${restaurantNotifications}" th:text="${note}">Notificación</li>
-            </ul>
-        </div>
+            <section class="card summary-card">
+                <div class="summary-line total-line">
+                    <strong>Total:</strong>
+                    <span id="totalPrice">$10.000</span>
+                </div>
+            </section>
+
+            <footer class="reserve-footer">
+                <button type="button" id="viewOrderBtn" class="checkout-btn" th:disabled="${#lists.isEmpty(menuItems)}">
+                    🛒 Ver pedido
+                </button>
+            </footer>
+        </form>
     </main>
 </div>
+
+<script th:inline="javascript">
+    const allMenuItems = /*[[${menuItems}]]*/ [];
+
+    function openMenuModal() {
+        const grouped = {};
+        allMenuItems.forEach(item => {
+            if (!grouped[item.mealType]) {
+                grouped[item.mealType] = [];
+            }
+            grouped[item.mealType].push(item);
+        });
+
+        const container = document.getElementById("menuGroups");
+        container.innerHTML = "";
+
+        Object.keys(grouped).forEach(mealType => {
+            const section = document.createElement("div");
+            section.className = "menu-group";
+
+            const title = document.createElement("h3");
+            title.textContent = mealType;
+            section.appendChild(title);
+
+            grouped[mealType].forEach(item => {
+                const card = document.createElement("button");
+                card.type = "button";
+                card.className = "menu-item-btn";
+                card.innerHTML = `
+                    <img src="${item.imageUrl}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/100x100?text=Plato'">
+                    <div>
+                        <strong>${item.name}</strong>
+                        <small>$${item.price.toLocaleString('es-CO')}</small>
+                    </div>
+                `;
+                card.addEventListener("click", (e) => {
+                    e.preventDefault();
+                    selectMenuItem(item);
+                });
+                section.appendChild(card);
+            });
+
+            container.appendChild(section);
+        });
+
+        document.getElementById("menuModal").classList.add("active");
+    }
+
+    function closeMenuModal() {
+        document.getElementById("menuModal").classList.remove("active");
+    }
+
+    function selectMenuItem(item) {
+        document.getElementById("menuItemId").value = item.id;
+        document.getElementById("mainDishName").textContent = item.name;
+        document.getElementById("mainDishImage").src = item.imageUrl;
+        document.getElementById("mainDishPrice").dataset.price = String(item.price);
+        document.getElementById("mainDishPrice").textContent = "$" + item.price.toLocaleString('es-CO');
+        document.querySelector(".meal-type").textContent = "(" + item.mealType + ")";
+
+        closeMenuModal();
+        refresh();
+    }
+
+    (function () {
+        const form = document.getElementById("reserveForm");
+        const menuItemIdInput = document.getElementById("menuItemId");
+        const mainDishPrice = document.getElementById("mainDishPrice");
+        const totalPriceEl = document.getElementById("totalPrice");
+        const selectedIngredientsInput = document.getElementById("selectedIngredients");
+        const pickupAtInput = document.getElementById("pickupAtInput");
+        const viewOrderBtn = document.getElementById("viewOrderBtn");
+
+        if (!form || !menuItemIdInput || !mainDishPrice || !viewOrderBtn) {
+            return;
+        }
+
+        const ingredientRows = document.querySelectorAll(".ingredient-row");
+        let basePrice = Number(mainDishPrice.dataset.price || 0);
+
+        function formatMoney(value) {
+            return "$" + Number(value).toLocaleString("es-CO");
+        }
+
+        window.refresh = function() {
+            let ingredientTotal = 0;
+            const selectedIngredients = [];
+
+            ingredientRows.forEach(row => {
+                const name = row.getAttribute("data-name");
+                const price = Number(row.getAttribute("data-price") || 0);
+
+                if (row.classList.contains("selected")) {
+                    ingredientTotal += price;
+                    selectedIngredients.push(name);
+                }
+            });
+
+            const total = basePrice + ingredientTotal;
+            totalPriceEl.textContent = formatMoney(total);
+            selectedIngredientsInput.value = selectedIngredients.join(",");
+        };
+
+        ingredientRows.forEach((row) => {
+            const toggle = row.querySelector(".ingredient-toggle");
+
+            toggle.addEventListener("click", (e) => {
+                e.preventDefault();
+                const selected = row.classList.toggle("selected");
+                toggle.textContent = selected ? "−" : "+";
+                refresh();
+            });
+        });
+
+        viewOrderBtn.addEventListener("click", () => {
+            const restaurantId = form.querySelector("input[name='restaurantId']").value;
+            const menuItemId = menuItemIdInput.value;
+            const pickupAt = pickupAtInput.value || "";
+            const selected = selectedIngredientsInput.value || "";
+
+            const url = "/restaurants/" + restaurantId + "/checkout"
+                + "?menuItemId=" + encodeURIComponent(menuItemId)
+                + "&pickupAt=" + encodeURIComponent(pickupAt)
+                + "&selectedIngredients=" + encodeURIComponent(selected);
+
+            window.location.href = url;
+        });
+
+        refresh();
+    })();
+</script>
 </body>
 </html>

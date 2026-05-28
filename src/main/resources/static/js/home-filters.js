@@ -18,7 +18,7 @@ function buildParams() {
 
 function renderCards(items) {
     restaurantsGrid.innerHTML = items.map(r => `
-        <article class="restaurant-card">
+        <a href="/restaurants/${r.id}" class="restaurant-card" onclick="navigateToRestaurant(${r.id}); return false;">
             <img src="${r.heroImageUrl}" alt="restaurant">
             <div class="restaurant-card-body">
                 <div>
@@ -33,9 +33,9 @@ function renderCards(items) {
             </div>
             <div class="restaurant-footer">
                 <span>Ranking: #${r.rankingPosition}</span>
-                <a href="/restaurants/${r.id}">Ver →</a>
+                <span class="view-btn">Ver →</span>
             </div>
-        </article>
+        </a>
     `).join('');
 
     if (resultCount) {
@@ -43,11 +43,21 @@ function renderCards(items) {
     }
 }
 
+// Función para navegar al detalle del restaurante
+function navigateToRestaurant(restaurantId) {
+    window.location.href = `/restaurants/${restaurantId}`;
+}
+
 async function refreshRestaurants() {
-    const params = buildParams();
-    const response = await fetch(`/api/restaurants/search?${params}`);
-    const data = await response.json();
-    renderCards(data);
+    try {
+        const params = buildParams();
+        const response = await fetch(`/api/restaurants/search?${params}`);
+        if (!response.ok) throw new Error('Error en la búsqueda');
+        const data = await response.json();
+        renderCards(data);
+    } catch (error) {
+        console.error('Error al actualizar restaurantes:', error);
+    }
 }
 
 let timer = null;
@@ -56,8 +66,14 @@ function scheduleRefresh() {
     timer = setTimeout(refreshRestaurants, 220);
 }
 
+// Event listeners
 if (queryInput) queryInput.addEventListener('input', scheduleRefresh);
 if (priceFilter) priceFilter.addEventListener('change', refreshRestaurants);
 if (cuisineFilter) cuisineFilter.addEventListener('change', refreshRestaurants);
 if (distanceFilter) distanceFilter.addEventListener('change', refreshRestaurants);
 if (availableOnly) availableOnly.addEventListener('change', refreshRestaurants);
+
+// Cargar restaurantes inicialmente
+document.addEventListener('DOMContentLoaded', function() {
+    refreshRestaurants();
+});

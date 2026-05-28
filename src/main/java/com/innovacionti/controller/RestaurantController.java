@@ -11,9 +11,11 @@ import com.innovacionti.service.RestaurantService;
 import com.innovacionti.service.UserService;
 import com.innovacionti.service.filter.FilterCriteria;
 import jakarta.servlet.http.HttpSession;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.util.List;
 
@@ -24,6 +26,9 @@ public class RestaurantController {
     private final UserService userService;
     private final NotificationService notificationService;
     private final ObjectMapper objectMapper = new ObjectMapper();
+
+    @Value("${google.maps.api.key:demo-key-fallback}")
+    private String googleMapsApiKey;
 
     public RestaurantController(RestaurantService restaurantService,
                                 ReservationService reservationService,
@@ -63,21 +68,26 @@ public class RestaurantController {
     }
 
     @GetMapping("/restaurants/{id}")
-    public String detail(@PathVariable long id, HttpSession session, Model model) {
-        Restaurant restaurant = restaurantService.requireById(id);
-        User currentUser = userService.currentUser(session).orElse(null);
-        boolean canReview = currentUser != null && currentUser.isRegistered() && currentUser.isInstitutional();
-        boolean canManage = currentUser != null
-                && "RESTAURANT".equalsIgnoreCase(currentUser.getRole())
-                && currentUser.getEmail().equalsIgnoreCase(restaurant.getManagerEmail());
+    public String detail(@PathVariable long id, HttpSession session, Model model, RedirectAttributes redirectAttributes) {
+        try {
+            Restaurant restaurant = restaurantService.requireById(id);
+            User currentUser = userService.currentUser(session).orElse(null);
+            boolean canReview = currentUser != null && currentUser.isRegistered() && currentUser.isInstitutional();
+            boolean canManage = currentUser != null
+                    && "RESTAURANT".equalsIgnoreCase(currentUser.getRole())
+                    && currentUser.getEmail().equalsIgnoreCase(restaurant.getManagerEmail());
 
-        model.addAttribute("restaurant", restaurant);
-        model.addAttribute("reservations", reservationService.findByRestaurantId(id));
-        model.addAttribute("currentUser", currentUser);
-        model.addAttribute("canReview", canReview);
-        model.addAttribute("canManage", canManage);
-        model.addAttribute("restaurantNotifications", notificationService.findRestaurantNotifications(id));
-        return "restaurant-detail";
+            model.addAttribute("restaurant", restaurant);
+            model.addAttribute("reservations", reservationService.findByRestaurantId(id));
+            model.addAttribute("currentUser", currentUser);
+            model.addAttribute("canReview", canReview);
+            model.addAttribute("canManage", canManage);
+            model.addAttribute("restaurantNotifications", notificationService.findRestaurantNotifications(id));
+            return "restaurant-detail";
+        } catch (IllegalArgumentException e) {
+            redirectAttributes.addFlashAttribute("error", "El restaurante no fue encontrado. ID: " + id);
+            return "redirect:/home";
+        }
     }
 
     @GetMapping("/map")
@@ -86,16 +96,15 @@ public class RestaurantController {
         model.addAttribute("restaurants", nearby);
         model.addAttribute("user", userService.currentUser(session).orElse(null));
 
-        // pasar API key desde variable de entorno al modelo
-        String googleKey = System.getenv("GOOGLE_MAPS_API_KEY");
-        model.addAttribute("googleMapsApiKey", googleKey);
+        // Pasar API key desde propiedades
+        model.addAttribute("googleMapsApiKey", googleMapsApiKey);
 
-        // pasar JSON de restaurantes para el JS (safe fallback a "[]")
+        // Pasar JSON de restaurantes para el JS
         String restaurantsJson = "[]";
         try {
             restaurantsJson = objectMapper.writeValueAsString(nearby);
         } catch (JsonProcessingException e) {
-            // si falla, dejamos el arreglo vacío; logs podrían añadirse aquí
+            // si falla, dejamos el arreglo vacío
         }
         model.addAttribute("restaurantsJson", restaurantsJson);
 

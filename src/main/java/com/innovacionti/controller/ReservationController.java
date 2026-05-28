@@ -14,6 +14,8 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
+import java.util.Arrays;
+import java.util.List;
 
 @Controller
 public class ReservationController {
@@ -41,10 +43,38 @@ public class ReservationController {
         return "reserve-dish";
     }
 
+    @GetMapping("/restaurants/{restaurantId}/checkout")
+    public String checkoutPage(@PathVariable long restaurantId,
+                               @RequestParam long menuItemId,
+                               @RequestParam String pickupAt,
+                               @RequestParam(required = false, defaultValue = "") String selectedIngredients,
+                               HttpSession session,
+                               Model model) {
+        User user = userService.currentUser(session).orElse(null);
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Restaurant restaurant = restaurantService.requireById(restaurantId);
+        MenuItem selectedMenuItem = restaurantService.findMenuItem(restaurantId, menuItemId);
+
+        List<String> selectedIngredientNames = Arrays.stream(selectedIngredients.split(","))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .toList();
+
+        model.addAttribute("restaurant", restaurant);
+        model.addAttribute("selectedMenuItem", selectedMenuItem);
+        model.addAttribute("pickupAt", pickupAt);
+        model.addAttribute("selectedIngredientNames", selectedIngredientNames);
+        return "checkout-order";
+    }
+
     @PostMapping("/reservations")
     public String createReservation(@RequestParam long restaurantId,
                                     @RequestParam long menuItemId,
                                     @RequestParam String pickupAt,
+                                    @RequestParam(required = false, defaultValue = "1") int quantity,
                                     HttpSession session,
                                     Model model) {
         User user = userService.currentUser(session).orElse(null);
@@ -52,14 +82,24 @@ public class ReservationController {
             return "redirect:/login";
         }
 
+        int safeQuantity = Math.max(1, Math.min(quantity, 10));
+
         try {
             LocalDateTime pickup = LocalDateTime.parse(pickupAt);
             Restaurant restaurant = restaurantService.requireById(restaurantId);
             MenuItem menuItem = restaurantService.findMenuItem(restaurantId, menuItemId);
-            Reservation reservation = reservationService.reserve(user, restaurant, menuItem, pickup);
-            return "redirect:/profile?msg=Reserva%20creada%20%23" + reservation.getId();
+
+            Reservation lastReservation = null;
+            for (int i = 0; i < safeQuantity; i++) {
+                lastReservation = reservationService.reserve(user, restaurant, menuItem, pickup);
+            }
+
+            if (safeQuantity == 1 && lastReservation != null) {
+                return "redirect:/profile?msg=Reserva%20creada%20%23" + lastReservation.getId();
+            }
+            return "redirect:/profile?msg=Se%20crearon%20" + safeQuantity + "%20reservas";
         } catch (DateTimeParseException ex) {
-            model.addAttribute("message", "Formato de fecha inválido.");
+            model.addAttribute("message", "Formato de fecha invalido.");
         } catch (IllegalArgumentException ex) {
             model.addAttribute("message", ex.getMessage());
         }

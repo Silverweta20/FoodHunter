@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Personalizar pedido</title>
+    <link rel="stylesheet" th:href="@{/css/checkout-order.css}" href="../static/css/checkout-order.css">
+</head>
+<body class="checkout-page">
+<div class="checkout-shell">
+    <header class="checkout-header">
+        <a th:href="@{/restaurants/{id}/reserve(id=${restaurant.id})}" class="back-btn" aria-label="Volver">‹</a>
+        <h1>Personalizar pedido</h1>
+    </header>
+
+    <main class="checkout-content">
+        <form id="checkoutForm" th:action="@{/reservations}" method="post">
+            <input type="hidden" name="restaurantId" th:value="${restaurant.id}">
+            <input type="hidden" name="menuItemId" th:value="${selectedMenuItem.id}">
+            <input type="hidden" name="pickupAt" th:value="${pickupAt}">
+            <input type="hidden" id="quantityInput" name="quantity" value="1">
+            <input type="hidden" id="notesInput" name="notes" value="">
+            <input type="hidden" id="selectedIngredientsInput" name="selectedIngredients" value="">
+            <input type="hidden" id="selectedSidesInput" name="selectedSides" value="">
+
+            <section class="card">
+                <h2 th:text="${restaurant.name}">Nombre restaurante</h2>
+                <div class="counter-row">
+                    <div>
+                        <small>Numero plato</small>
+                        <p th:text="${selectedMenuItem.name}">Pizza Margherita</p>
+                    </div>
+                    <div class="counter-control">
+                        <button type="button" class="counter-btn minus" id="dishMinus">−</button>
+                        <span id="dishQty">1</span>
+                        <button type="button" class="counter-btn plus" id="dishPlus">+</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Notas</h2>
+                <textarea id="notesArea" placeholder="Instrucciones especiales..."></textarea>
+            </section>
+
+            <section class="card">
+                <h2>Plato</h2>
+                <div class="line-item">
+                    <span th:text="${selectedMenuItem.name}">Pizza Margherita</span>
+                    <strong id="dishSubtotal"
+                            th:attr="data-base-price=${selectedMenuItem.price}"
+                            th:text="${'$' + #numbers.formatInteger(selectedMenuItem.price, 0, 'POINT')}">$10.000</strong>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Ingredientes</h2>
+
+                <div class="line-item with-counter ingredient-item"
+                     data-name="Tomate" data-price="500"
+                     th:attrappend="data-selected=${selectedIngredientNames.contains('Tomate')}">
+                    <div>
+                        <span>Tomate</span>
+                        <small>+$500</small>
+                    </div>
+                    <div class="counter-control small">
+                        <button type="button" class="counter-btn minus">−</button>
+                        <span class="qty">0</span>
+                        <button type="button" class="counter-btn plus">+</button>
+                    </div>
+                </div>
+
+                <div class="line-item with-counter ingredient-item"
+                     data-name="Albahaca" data-price="300"
+                     th:attrappend="data-selected=${selectedIngredientNames.contains('Albahaca')}">
+                    <div>
+                        <span>Albahaca</span>
+                        <small>+$300</small>
+                    </div>
+                    <div class="counter-control small">
+                        <button type="button" class="counter-btn minus">−</button>
+                        <span class="qty">0</span>
+                        <button type="button" class="counter-btn plus">+</button>
+                    </div>
+                </div>
+
+                <div class="line-item with-counter ingredient-item"
+                     data-name="Aceitunas" data-price="400"
+                     th:attrappend="data-selected=${selectedIngredientNames.contains('Aceitunas')}">
+                    <div>
+                        <span>Aceitunas</span>
+                        <small>+$400</small>
+                    </div>
+                    <div class="counter-control small">
+                        <button type="button" class="counter-btn minus">−</button>
+                        <span class="qty">0</span>
+                        <button type="button" class="counter-btn plus">+</button>
+                    </div>
+                </div>
+            </section>
+
+            <section class="card">
+                <h2>Acompanantes</h2>
+
+                <div class="line-item with-counter side-item" data-name="Papas fritas" data-price="2000">
+                    <div>
+                        <span>Papas fritas</span>
+                        <small>+$2.000</small>
+                    </div>
+                    <div class="counter-control small">
+                        <button type="button" class="counter-btn minus">−</button>
+                        <span class="qty">0</span>
+                        <button type="button" class="counter-btn plus">+</button>
+                    </div>
+                </div>
+
+                <div class="line-item with-counter side-item" data-name="Ensalada" data-price="1500">
+                    <div>
+                        <span>Ensalada</span>
+                        <small>+$1.500</small>
+                    </div>
+                    <div class="counter-control small">
+                        <button type="button" class="counter-btn minus">−</button>
+                        <span class="qty">0</span>
+                        <button type="button" class="counter-btn plus">+</button>
+                    </div>
+                </div>
+            </section>
+
+            <footer class="checkout-footer">
+                <div class="total-row">
+                    <strong>Total:</strong>
+                    <span id="totalPrice">$10.000</span>
+                </div>
+                <div class="action-row">
+                    <a th:href="@{/restaurants/{id}/reserve(id=${restaurant.id})}" class="btn btn-secondary">Volver</a>
+                    <button type="submit" class="btn btn-primary">Agregar</button>
+                </div>
+            </footer>
+        </form>
+    </main>
+</div>
+
+<script>
+    (function () {
+        const dishSubtotal = document.getElementById("dishSubtotal");
+        const totalPrice = document.getElementById("totalPrice");
+        const dishQtyEl = document.getElementById("dishQty");
+        const dishMinus = document.getElementById("dishMinus");
+        const dishPlus = document.getElementById("dishPlus");
+        const quantityInput = document.getElementById("quantityInput");
+        const notesArea = document.getElementById("notesArea");
+        const notesInput = document.getElementById("notesInput");
+        const selectedIngredientsInput = document.getElementById("selectedIngredientsInput");
+        const selectedSidesInput = document.getElementById("selectedSidesInput");
+
+        let dishQty = 1;
+        const basePrice = Number(dishSubtotal.dataset.basePrice || 0);
+
+        function money(value) {
+            return "$" + Number(value).toLocaleString("es-CO");
+        }
+
+        function updateCounterRow(container, diff) {
+            const qtyEl = container.querySelector(".qty");
+            const current = Number(qtyEl.textContent || "0");
+            const next = Math.max(0, current + diff);
+            qtyEl.textContent = String(next);
+            refresh();
+        }
+
+        function bindCounterButtons(selector) {
+            document.querySelectorAll(selector).forEach((row) => {
+                const minus = row.querySelector(".minus");
+                const plus = row.querySelector(".plus");
+                minus.addEventListener("click", () => updateCounterRow(row, -1));
+                plus.addEventListener("click", () => updateCounterRow(row, 1));
+            });
+        }
+
+        function collectRows(selector) {
+            return Array.from(document.querySelectorAll(selector)).map((row) => {
+                const name = row.getAttribute("data-name");
+                const price = Number(row.getAttribute("data-price") || 0);
+                const qty = Number(row.querySelector(".qty").textContent || "0");
+                return {name, price, qty};
+            });
+        }
+
+        function refresh() {
+            const ingredients = collectRows(".ingredient-item");
+            const sides = collectRows(".side-item");
+
+            const extras = ingredients.reduce((acc, x) => acc + x.price * x.qty, 0)
+                + sides.reduce((acc, x) => acc + x.price * x.qty, 0);
+
+            const dishTotal = basePrice * dishQty;
+            const total = dishTotal + extras;
+
+            dishSubtotal.textContent = money(dishTotal);
+            totalPrice.textContent = money(total);
+            quantityInput.value = String(dishQty);
+
+            selectedIngredientsInput.value = ingredients
+                .filter((x) => x.qty > 0)
+                .map((x) => x.name + " x" + x.qty)
+                .join(",");
+
+            selectedSidesInput.value = sides
+                .filter((x) => x.qty > 0)
+                .map((x) => x.name + " x" + x.qty)
+                .join(",");
+        }
+
+        dishMinus.addEventListener("click", () => {
+            dishQty = Math.max(1, dishQty - 1);
+            dishQtyEl.textContent = String(dishQty);
+            refresh();
+        });
+
+        dishPlus.addEventListener("click", () => {
+            dishQty = Math.min(10, dishQty + 1);
+            dishQtyEl.textContent = String(dishQty);
+            refresh();
+        });
+
+        notesArea.addEventListener("input", () => {
+            notesInput.value = notesArea.value;
+        });
+
+        bindCounterButtons(".ingredient-item");
+        bindCounterButtons(".side-item");
+
+        document.querySelectorAll(".ingredient-item").forEach((row) => {
+            const selected = row.getAttribute("data-selected");
+            if (selected === "true") {
+                row.querySelector(".qty").textContent = "1";
+            }
+        });
+
+        refresh();
+    })();
+</script>
+</body>
+</html>
