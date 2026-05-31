@@ -43,7 +43,7 @@ Antes de comenzar, asegúrate de tener instalado:
 
 ## Clonar repositorio
 ```bash
-git https://github.com/Silverweta20/FoodHunter.git
+git clone https://github.com/Silverweta20/FoodHunter.git
 cd FoodHunter
 ```
 
