@@ -60,3 +60,9 @@ docker compose ps
 
 ### 3. Acceder a la aplicación
 - **Web:** http://localhost:8080
+
+
+## Otra forma de desplegar por medio de contenedor en Docker Hub
+```bash
+docker pull silverweta/food-hunter-by-change:0d6f4ad9679a90f2a0af1f9cf1677b3da1aae352
+```
