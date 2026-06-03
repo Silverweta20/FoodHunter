@@ -18,11 +18,7 @@ WORKDIR /app
 # Copiar JAR desde la etapa de build
 COPY --from=builder /build/target/innovacionti-1.0.0.jar app.jar
 
-# Aceptar argumento de build
-ARG GOOGLE_MAPS_API_KEY
-ENV GOOGLE_MAPS_API_KEY=${GOOGLE_MAPS_API_KEY}
-
-# Variables de entorno adicionales
+# Variables de entorno (sin secrets aquí)
 ENV JAVA_OPTS="-Xmx512m -Xms256m"
 ENV SPRING_PROFILES_ACTIVE=prod
 
