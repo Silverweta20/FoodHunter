@@ -40,25 +40,25 @@ Antes de comenzar, asegúrate de tener instalado:
 - ✅ **Git** ([Descargar](https://git-scm.com/))
 - ✅ **Conexión a Internet**
 
+## 🚀 Despliegue
 
-## Clonar repositorio
+### 1. Clonar repositorio
 ```bash
 git clone https://github.com/Silverweta20/FoodHunter.git
 cd FoodHunter
 ```
 
-## 🚀 Despliegue
-### 1. Levantar los servicios
+### 2. Levantar los servicios
 ```bash
 docker compose up --build -d
 ```
 
-### 2. Verificar que todo esté corriendo
+### 3. Verificar que todo esté corriendo
 ```bash
 docker compose ps
 ```
 
-### 3. Acceder a la aplicación
+### 4. Acceder a la aplicación
 - **Web:** http://localhost:8080
 
 
